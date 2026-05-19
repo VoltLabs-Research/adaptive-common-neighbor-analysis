@@ -105,9 +105,9 @@
         "data": {
           "entrypoint": {
             "type": "python-script",
-            "binary": "adaptive-common-neighbor-analysis-plugin.zip",
+            "binary": "common-neighbor-analysis-plugin.zip",
             "binaryObjectPath": "__UPLOAD_BINARY_OBJECT_PATH__",
-            "binaryFileName": "adaptive-common-neighbor-analysis-plugin.zip",
+            "binaryFileName": "common-neighbor-analysis-plugin.zip",
             "entrypointScript": "scripts/cna_plugin_wrapper.py",
             "requirementsFile": "",
             "arguments": "{{ foreach-trajectory-dumps.currentValue.path }} {{ foreach-trajectory-dumps.outputPath }} {{ plugin-arguments.as_str }}",
