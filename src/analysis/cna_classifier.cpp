@@ -1,3 +1,5 @@
+#include <bit>
+
 #include <volt/analysis/cna_classifier.h>
 
 namespace Volt{
@@ -9,7 +11,7 @@ int CommonNeighborAnalysis::findCommonNeighbors(
     int
 ){
     commonNeighbors = neighborArray.neighborArray[neighborIndex];
-    return __builtin_popcount(commonNeighbors);
+    return std::popcount(commonNeighbors);
 }
 
 bool CommonNeighborAnalysis::findMatchingNeighborPermutation(
@@ -256,7 +258,7 @@ int CommonNeighborAnalysis::calcMaxChainLength(CNAPairBond* neighborBonds, int n
         unsigned int atomsProcessed = 0;
         int clusterSize = 1;
         do{
-            int nextAtomIndex = __builtin_ctz(atomsToProcess);
+            int nextAtomIndex = static_cast<int>(std::countr_zero(atomsToProcess));
             unsigned int nextAtom = 1 << nextAtomIndex;
             atomsProcessed |= nextAtom;
             atomsToProcess &= ~nextAtom;
