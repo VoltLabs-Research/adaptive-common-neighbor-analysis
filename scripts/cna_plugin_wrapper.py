@@ -89,8 +89,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument('input_dump')
     parser.add_argument('output_base')
-    parser.add_argument('--crystalStructure', default='FCC')
-    parser.add_argument('--dissolveSmallClusters', action='store_true')
+    parser.add_argument('--crystal_structure', default='FCC')
+    parser.add_argument('--dissolve_small_clusters', action='store_true')
 
     args, unknown = parser.parse_known_args()
     if unknown:
@@ -118,7 +118,7 @@ def resolve_runtime_paths() -> dict[str, Path]:
 
 
 def build_command(args: argparse.Namespace, runtime_paths: dict[str, Path]) -> list[str]:
-    crystal_structure = normalize_structure_token(args.crystalStructure)
+    crystal_structure = normalize_structure_token(args.crystal_structure)
     if crystal_structure == 'SC':
         raise WrapperError('ACNA/CNA no soporta SC en este repo. Usa PTM o PSM para SC.')
 
@@ -126,10 +126,10 @@ def build_command(args: argparse.Namespace, runtime_paths: dict[str, Path]) -> l
         str(runtime_paths['cna']),
         args.input_dump,
         args.output_base,
-        '--crystalStructure', crystal_structure
+        '--crystal_structure', crystal_structure
     ]
-    if args.dissolveSmallClusters:
-        command.append('--dissolveSmallClusters')
+    if args.dissolve_small_clusters:
+        command.append('--dissolve_small_clusters')
     return command
 
 

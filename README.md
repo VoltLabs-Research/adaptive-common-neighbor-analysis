@@ -63,6 +63,6 @@ common-neighbor-analysis <lammps_file> [output_base] [options]
 | --- | --- | --- | --- |
 | `<lammps_file>` | Yes | Input LAMMPS dump file. | |
 | `[output_base]` | No | Base path for output files. | derived from input |
-| `--crystalStructure <type>` | No | Input crystal structure: `FCC`, `BCC`, `HCP`, `CUBIC_DIAMOND`, `HEX_DIAMOND`. | `FCC` |
-| `--dissolveSmallClusters` | No | Mark small clusters as `OTHER` after clustering. | `false` |
+| `--crystal_structure <type>` | No | Input crystal structure: `FCC`, `BCC`, `HCP`, `CUBIC_DIAMOND`, `HEX_DIAMOND`. | `FCC` |
+| `--dissolve_small_clusters` | No | Mark small clusters as `OTHER` after clustering. | `false` |
 | `--help` | No | Print CLI help. | |

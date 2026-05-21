@@ -12,8 +12,8 @@ namespace Volt::CnaCliDetail {
 void showUsage(const std::string& name){
     printUsageHeader(name, "Volt - Common Neighbor Analysis");
     std::cerr
-        << "  --crystalStructure <type>     Crystal structure. (FCC|BCC|HCP|CUBIC_DIAMOND|HEX_DIAMOND) [default: FCC]\n"
-        << "  --dissolveSmallClusters       Mark small clusters as OTHER after building clusters.\n";
+        << "  --crystal_structure <type>     Crystal structure. (FCC|BCC|HCP|CUBIC_DIAMOND|HEX_DIAMOND) [default: FCC]\n"
+        << "  --dissolve_small_clusters       Mark small clusters as OTHER after building clusters.\n";
     printHelpOption();
 }
 
@@ -36,14 +36,14 @@ int main(int argc, char* argv[]){
     spdlog::info("Output base: {}", outputBase);
 
     CommonNeighborAnalysisService analyzer;
-    LatticeStructureType crystalStructure = LATTICE_FCC;
-    const std::string crystalStructureOption = getString(opts, "--crystalStructure", "FCC");
-    if(!parseLatticeStructureType(crystalStructureOption, crystalStructure)){
-        spdlog::warn("Unknown crystal structure '{}', defaulting to FCC.", crystalStructureOption);
-        crystalStructure = LATTICE_FCC;
+    LatticeStructureType crystal_structure = LATTICE_FCC;
+    const std::string crystal_structureOption = getString(opts, "--crystal_structure", "FCC");
+    if(!parseLatticeStructureType(crystal_structureOption, crystal_structure)){
+        spdlog::warn("Unknown crystal structure '{}', defaulting to FCC.", crystal_structureOption);
+        crystal_structure = LATTICE_FCC;
     }
-    analyzer.setInputCrystalStructure(crystalStructure);
-    analyzer.setDissolveSmallClusters(hasOption(opts, "--dissolveSmallClusters"));
+    analyzer.setInputCrystalStructure(crystal_structure);
+    analyzer.setDissolveSmallClusters(hasOption(opts, "--dissolve_small_clusters"));
 
     spdlog::info("Starting common neighbor analysis...");
     json result = analyzer.compute(frame, outputBase, filename);
