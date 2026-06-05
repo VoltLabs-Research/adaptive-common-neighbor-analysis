@@ -23,71 +23,6 @@ namespace Volt{
 
 using namespace Volt::Particles;
 
-namespace CnaServiceDetail{
-
-std::string structureTypeNameForExport(int structureType){
-    return structureTypeName(structureType);
-}
-
-json buildStructureListing(const std::vector<int>& structureTypes){
-    std::map<int, int> counts;
-
-    for(int rawType : structureTypes){
-        counts[rawType]++;
-    }
-
-    json listing = json::array();
-    for(const auto& [structureType, count] : counts){
-        if(count <= 0){
-            continue;
-        }
-
-        listing.push_back({
-            {"structure_id", structureType},
-            {"structure_name", structureTypeNameForExport(structureType)},
-            {"atom_count", count}
-        });
-    }
-
-    std::sort(listing.begin(), listing.end(), [](const json& lhs, const json& rhs){
-        return lhs.value("structure_name", "") < rhs.value("structure_name", "");
-    });
-
-    return listing;
-}
-
-json buildPerAtomProperties(
-    const LammpsParser::Frame& frame,
-    const std::vector<int>& structureTypes,
-    const ParticleProperty* clusterIds
-){
-    json perAtom = json::array();
-
-    for(size_t atomIndex = 0; atomIndex < static_cast<size_t>(frame.natoms); ++atomIndex){
-        const int structureType = structureTypes[atomIndex];
-
-        json atom;
-        atom["id"] = atomIndex < frame.ids.size()
-            ? frame.ids[atomIndex]
-            : static_cast<int>(atomIndex);
-        atom["structure_type"] = structureType;
-        atom["structure_name"] = structureTypeNameForExport(structureType);
-        atom["cluster_id"] = clusterIds ? clusterIds->getInt(atomIndex) : 0;
-
-        if(atomIndex < frame.positions.size()){
-            const auto& pos = frame.positions[atomIndex];
-            atom["pos"] = {pos.x(), pos.y(), pos.z()};
-        }else{
-            atom["pos"] = {0.0, 0.0, 0.0};
-        }
-
-        perAtom.push_back(std::move(atom));
-    }
-
-    return perAtom;
-}
-
-}
 
 CommonNeighborAnalysisService::CommonNeighborAnalysisService()
     : _inputCrystalStructure(LATTICE_FCC)
@@ -133,28 +68,18 @@ json CommonNeighborAnalysisService::compute(
         ClusterBuilder clusterBuilder(analysis, context);
         clusterBuilder.build(_dissolveSmallClusters);
 
-        std::vector<int> atomStructureTypes(
-            static_cast<size_t>(frame.natoms),
-            static_cast<int>(StructureType::OTHER)
-        );
-        for(int atomIndex = 0; atomIndex < frame.natoms; ++atomIndex){
-            atomStructureTypes[static_cast<size_t>(atomIndex)] = context.structureTypes->getInt(atomIndex);
-        }
+        // Count structures for summary
+        std::map<int,int> structCounts;
+        for(int i = 0; i < frame.natoms; ++i)
+            structCounts[context.structureTypes->getInt(i)]++;
 
         json result;
-        const json structuresListing = CnaServiceDetail::buildStructureListing(atomStructureTypes);
         result["main_listing"] = {
             {"total_atoms", frame.natoms},
-            {"structure_count", static_cast<int>(structuresListing.size())}
+            {"structure_count", static_cast<int>(structCounts.size())}
         };
-        result["sub_listings"] = {
-            {"structures", structuresListing}
-        };
-        result["per-atom-properties"] = CnaServiceDetail::buildPerAtomProperties(
-            frame,
-            atomStructureTypes,
-            context.atomClusters.get()
-        );
+        result["sub_listings"] = json::object();
+        result["per-atom-properties"] = json::array();
 
         if(!outputBase.empty()){
             const std::string msgpackPath = outputBase + "_cna_analysis.msgpack";
@@ -163,13 +88,9 @@ json CommonNeighborAnalysisService::compute(
             }
 
             const std::string atomsPath = outputBase + "_atoms.msgpack";
-            if(!JsonUtils::writeJsonMsgpackToFile(
-                StructureIdentificationExport::buildStructureIdentificationJson(frame, analysis),
-                atomsPath,
-                false
-            )){
-                return AnalysisResult::failure("Failed to write " + atomsPath);
-            }
+            StructureIdentificationExport::streamStructureIdentificationToFile(
+                atomsPath, frame, analysis
+            );
         }
 
         if(!AnalysisPipelineUtils::appendClusterOutputs(

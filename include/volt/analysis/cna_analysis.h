@@ -4,21 +4,15 @@
 #include <volt/analysis/structure_analysis_context.h>
 #include <volt/analysis/cna_local_structure.h>
 #include <volt/core/lammps_parser.h>
-#include <nlohmann/json.hpp>
 #include <array>
 
 namespace Volt{
-
-using json = nlohmann::json;
 
 class CommonNeighborAnalysisEngine{
 public:
     CommonNeighborAnalysisEngine(AnalysisContext& context, bool identifyPlanarDefects);
 
     void perform();
-
-    json buildMainListing() const;
-    json getPerAtomProperties(const LammpsParser::Frame& frame) const;
 
     std::string getStructureTypeName(int structureType) const;
 

@@ -100,32 +100,5 @@ std::string CommonNeighborAnalysisEngine::getStructureTypeName(int structureType
     return std::string(structureTypeName(structureType));
 }
 
-json CommonNeighborAnalysisEngine::buildMainListing() const{
-    return json::object();
 }
 
-json CommonNeighborAnalysisEngine::getPerAtomProperties(const LammpsParser::Frame& frame) const{
-    json perAtom = json::array();
-
-    for(size_t i = 0; i < static_cast<size_t>(frame.natoms); ++i){
-        const int structureType = _context.structureTypes->getInt(i);
-
-        json atom;
-        atom["id"] = i < frame.ids.size() ? frame.ids[i] : static_cast<int>(i);
-        atom["structure_type"] = structureType;
-        atom["structure_name"] = getStructureTypeName(structureType);
-
-        if(i < frame.positions.size()){
-            const auto& pos = frame.positions[i];
-            atom["pos"] = {pos.x(), pos.y(), pos.z()};
-        }else{
-            atom["pos"] = {0.0, 0.0, 0.0};
-        }
-
-        perAtom.push_back(atom);
-    }
-
-    return perAtom;
-}
-
-}
