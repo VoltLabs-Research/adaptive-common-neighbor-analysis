@@ -15,7 +15,7 @@
             "icon": "HiCubeTransparent",
             "author": "Rodolfo Herrera",
             "license": "MIT",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "homepage": "https://github.com/rodyherrera/Volterra",
             "description": "Ejecuta ACNA/CNA, exporta structure_type por atomo y genera los artefactos de cluster graph consumibles por OpenDXA."
           }
@@ -104,12 +104,10 @@
         },
         "data": {
           "entrypoint": {
-            "type": "python-script",
-            "binary": "common-neighbor-analysis-plugin.zip",
+            "type": "executable",
+            "binary": "common-neighbor-analysis",
             "binaryObjectPath": "__UPLOAD_BINARY_OBJECT_PATH__",
-            "binaryFileName": "common-neighbor-analysis-plugin.zip",
-            "entrypointScript": "scripts/cna_plugin_wrapper.py",
-            "requirementsFile": "",
+            "binaryFileName": "common-neighbor-analysis",
             "arguments": "{{ foreach-trajectory-dumps.currentValue.path }} {{ foreach-trajectory-dumps.outputPath }} {{ plugin-arguments.as_str }}",
             "timeout": -1,
             "outputs": [

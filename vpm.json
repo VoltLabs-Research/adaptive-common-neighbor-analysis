@@ -1,6 +1,6 @@
 {
   "name": "@voltlabs/adaptive-common-neighbor-analysis",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "kind": "workflow",
   "publisher": "voltlabs",
   "description": "Structural environment identification using Adaptive Common Neighbor Analysis (ACNA)",
