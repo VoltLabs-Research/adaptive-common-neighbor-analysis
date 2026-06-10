@@ -82,13 +82,13 @@ json CommonNeighborAnalysisService::compute(
         result["per-atom-properties"] = json::array();
 
         if(!outputBase.empty()){
-            const std::string msgpackPath = outputBase + "_cna_analysis.msgpack";
-            if(!JsonUtils::writeJsonMsgpackToFile(result, msgpackPath, false)){
-                return AnalysisResult::failure("Failed to write " + msgpackPath);
+            const std::string parquetPath = outputBase + "_cna_analysis.parquet";
+            if(!JsonUtils::writeJsonToParquet(result, parquetPath, false)){
+                return AnalysisResult::failure("Failed to write " + parquetPath);
             }
 
-            const std::string atomsPath = outputBase + "_atoms.msgpack";
-            StructureIdentificationExport::streamStructureIdentificationToFile(
+            const std::string atomsPath = outputBase + "_atoms.parquet";
+            StructureIdentificationExport::streamStructureIdentificationToParquet(
                 atomsPath, frame, analysis
             );
         }

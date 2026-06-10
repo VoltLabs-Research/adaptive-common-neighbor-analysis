@@ -144,7 +144,7 @@
           "exposure": {
             "name": "Structure Identification",
             "icon": "HiCubeTransparent",
-            "results": "atoms.msgpack",
+            "results": "atoms.parquet",
             "iterable": ""
           }
         }
@@ -174,7 +174,7 @@
           "exposure": {
             "name": "CNA Analysis",
             "icon": "HiCube",
-            "results": "cna_analysis.msgpack",
+            "results": "cna_analysis.parquet",
             "iterable": "",
             "hasListing": false
           }
@@ -191,7 +191,7 @@
           "exposure": {
             "name": "Structure Counts Chart",
             "icon": "HiChartBar",
-            "results": "atoms.msgpack",
+            "results": "atoms.parquet",
             "iterable": "",
             "hasListing": false
           }
