@@ -176,7 +176,19 @@
             "icon": "HiCube",
             "results": "cna_analysis.parquet",
             "iterable": "",
-            "hasListing": false
+            "hasListing": false,
+            "properties": [
+              {
+                "key": "structure_type",
+                "label": "Structure Type",
+                "type": "int"
+              },
+              {
+                "key": "coordination",
+                "label": "Coordination number",
+                "type": "int"
+              }
+            ]
           }
         }
       },
@@ -221,6 +233,40 @@
               "showLegend": false,
               "showGrid": true
             }
+          }
+        }
+      },
+      {
+        "id": "clusters-table-exposure",
+        "type": "exposure",
+        "position": {
+          "x": 1712,
+          "y": 592
+        },
+        "data": {
+          "exposure": {
+            "name": "Clusters Table",
+            "icon": "HiTable",
+            "id": "clusters_table",
+            "results": "clusters.table",
+            "hasListing": false
+          }
+        }
+      },
+      {
+        "id": "clusters-transitions-exposure",
+        "type": "exposure",
+        "position": {
+          "x": 1712,
+          "y": 720
+        },
+        "data": {
+          "exposure": {
+            "name": "Clusters Transitions",
+            "icon": "HiTable",
+            "id": "clusters_transitions",
+            "results": "cluster_transitions.table",
+            "hasListing": false
           }
         }
       }
@@ -287,6 +333,20 @@
         "source": "structure-counts-chart-exposure",
         "sourceHandle": "output",
         "target": "structure-counts-chart-export",
+        "targetHandle": "input"
+      },
+      {
+        "id": "edge-analysis-entrypoint-clusters-table-exposure",
+        "source": "analysis-entrypoint",
+        "sourceHandle": "output",
+        "target": "clusters-table-exposure",
+        "targetHandle": "input"
+      },
+      {
+        "id": "edge-analysis-entrypoint-clusters-transitions-exposure",
+        "source": "analysis-entrypoint",
+        "sourceHandle": "output",
+        "target": "clusters-transitions-exposure",
         "targetHandle": "input"
       }
     ]
