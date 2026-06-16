@@ -1,68 +1,37 @@
-# CommonNeighborAnalysis
+# Adaptive Common Neighbor Analysis
 
-`CommonNeighborAnalysis` classifies atoms by local crystal environment and exports the reconstructed state consumed by DXA-compatible downstream tools.
+Runs adaptive common neighbor analysis (ACNA/CNA), exports per-atom structure type, and generates the cluster-graph artifacts consumed by OpenDXA.
 
-## One-Command Install
-
-```bash
-curl -sSL https://raw.githubusercontent.com/VoltLabs-Research/CoreToolkit/main/scripts/install-plugin.sh | bash -s -- CommonNeighborAnalysis
-```
-
-## Build from source
-
-Requires [Conan 2.x](https://docs.conan.io/2/installation.html), CMake 3.20+, and a C++23 compiler (GCC 14+ or Clang 17+).
-
-### Prerequisites
-
-The following Conan packages must be available in your local cache:
-
-- `coretoolkit/1.0.0` (from the `CoreToolkit` repository)
-- `structure-identification/1.0.0` (from the `StructureIdentification` repository)
-
-For each dependency, clone its repository and create the package:
+## Install
 
 ```bash
-conan create <path-to-dependency-repo> --build=missing -o "hwloc/*:shared=True"
-```
-
-### Build
-
-From the root of this repository:
-
-```bash
-conan install . -of build --build=missing -o "hwloc/*:shared=True"
-cmake --preset conan-release
-cmake --build build/build/Release -j
-```
-
-### Run
-
-```bash
-./build/build/Release/common-neighbor-analysis --help
-```
-
-### Package as Conan recipe
-
-To make this plugin available as a Conan package for other projects:
-
-```bash
-conan create . --build=missing -o "hwloc/*:shared=True"
+vpm install @voltlabs/adaptive-common-neighbor-analysis
 ```
 
 ## CLI
 
-Usage:
-
 ```bash
-common-neighbor-analysis <lammps_file> [output_base] [options]
+common-neighbor-analysis <input_dump> [output_base] [options]
 ```
 
-### Arguments
+| Argument | Required | Default | Description |
+|---|---|---|---|
+| `<input_dump>` | yes | — | Input LAMMPS dump. |
+| `[output_base]` | no | derived from input | Base path for output files. |
+| `--crystal_structure <type>` | no | `FCC` | Reference crystal structure: `BCC`, `FCC`, `HCP`, `CUBIC_DIAMOND`, `HEX_DIAMOND`. |
+| `--dissolve_small_clusters` | no | `false` | Mark small clusters as `OTHER` after clustering. |
 
-| Argument | Required | Description | Default |
-| --- | --- | --- | --- |
-| `<lammps_file>` | Yes | Input LAMMPS dump file. | |
-| `[output_base]` | No | Base path for output files. | derived from input |
-| `--crystal_structure <type>` | No | Input crystal structure: `FCC`, `BCC`, `HCP`, `CUBIC_DIAMOND`, `HEX_DIAMOND`. | `FCC` |
-| `--dissolve_small_clusters` | No | Mark small clusters as `OTHER` after clustering. | `false` |
-| `--help` | No | Print CLI help. | |
+## Exports
+
+| Output file | Exposure | Exporter → artifact |
+|---|---|---|
+| `{output_base}_atoms.parquet` | Structure Identification | AtomisticExporter → glb |
+| `{output_base}_cna_analysis.parquet` | CNA Analysis | — |
+| `{output_base}_atoms.parquet` | Structure Counts Chart | ChartExporter → chart-png |
+| `{output_base}_clusters.table` | Clusters Table | — |
+| `{output_base}_cluster_transitions.table` | Clusters Transitions | — |
+| `{output_base}_neighbor_lattice.parquet` | Neighbor Lattice | — |
+
+---
+
+Full input contract and examples: https://docs.voltcloud.dev/docs/plugins/adaptive-common-neighbor-analysis
