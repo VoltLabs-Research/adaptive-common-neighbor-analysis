@@ -22,54 +22,6 @@
         }
       },
       {
-        "id": "plugin-arguments",
-        "type": "arguments",
-        "position": {
-          "x": 528,
-          "y": 208
-        },
-        "data": {
-          "arguments": {
-            "arguments": [
-              {
-                "argument": "crystal_structure",
-                "type": "select",
-                "label": "Crystal Structure",
-                "default": "FCC",
-                "options": [
-                  {
-                    "key": "BCC",
-                    "label": "Body-Centered Cubic (BCC)"
-                  },
-                  {
-                    "key": "FCC",
-                    "label": "Face-Centered Cubic (FCC)"
-                  },
-                  {
-                    "key": "HCP",
-                    "label": "Hexagonal Close Packed (HCP)"
-                  },
-                  {
-                    "key": "CUBIC_DIAMOND",
-                    "label": "Cubic Diamond"
-                  },
-                  {
-                    "key": "HEX_DIAMOND",
-                    "label": "Hex Diamond"
-                  }
-                ]
-              },
-              {
-                "argument": "dissolve_small_clusters",
-                "type": "boolean",
-                "label": "Dissolve Small Clusters",
-                "default": false
-              }
-            ]
-          }
-        }
-      },
-      {
         "id": "trajectory-context",
         "type": "context",
         "position": {
@@ -108,28 +60,8 @@
             "binary": "common-neighbor-analysis",
             "binaryObjectPath": "__UPLOAD_BINARY_OBJECT_PATH__",
             "binaryFileName": "common-neighbor-analysis",
-            "arguments": "{{ foreach-trajectory-dumps.currentValue.path }} {{ foreach-trajectory-dumps.outputPath }} {{ plugin-arguments.as_str }}",
-            "timeout": -1,
-            "outputs": [
-              {
-                "name": "annotatedDump",
-                "sourceSuffix": "_annotated.dump",
-                "contentType": "text/plain",
-                "description": "Per-atom structure annotated LAMMPS dump emitted by ACNA/CNA."
-              },
-              {
-                "name": "clustersTable",
-                "sourceSuffix": "_clusters.table",
-                "contentType": "text/plain",
-                "description": "Cluster graph table required by OpenDXA / LineReconstructionDXA / ElasticStrain."
-              },
-              {
-                "name": "clustersTransitions",
-                "sourceSuffix": "_cluster_transitions.table",
-                "contentType": "text/plain",
-                "description": "Cluster transitions table required by OpenDXA / LineReconstructionDXA / ElasticStrain."
-              }
-            ]
+            "arguments": "{{ foreach-trajectory-dumps.currentValue.path }} {{ foreach-trajectory-dumps.outputPath }}",
+            "timeout": -1
           }
         }
       },
@@ -247,7 +179,6 @@
           "exposure": {
             "name": "Clusters Table",
             "icon": "HiTable",
-            "id": "clusters_table",
             "results": "clusters.table",
             "hasListing": false
           }
@@ -264,7 +195,6 @@
           "exposure": {
             "name": "Clusters Transitions",
             "icon": "HiTable",
-            "id": "clusters_transitions",
             "results": "cluster_transitions.table",
             "hasListing": false
           }
@@ -281,7 +211,6 @@
           "exposure": {
             "name": "Neighbor Lattice",
             "icon": "HiTable",
-            "id": "neighbor_lattice",
             "results": "neighbor_lattice.parquet",
             "hasListing": false
           }
@@ -289,20 +218,6 @@
       }
     ],
     "edges": [
-      {
-        "id": "edge-metadata-arguments",
-        "source": "plugin-metadata",
-        "sourceHandle": "output",
-        "target": "plugin-arguments",
-        "targetHandle": "input"
-      },
-      {
-        "id": "edge-arguments-context",
-        "source": "plugin-arguments",
-        "sourceHandle": "output",
-        "target": "trajectory-context",
-        "targetHandle": "input"
-      },
       {
         "id": "edge-context-foreach",
         "source": "trajectory-context",
@@ -372,7 +287,28 @@
         "sourceHandle": "output",
         "target": "neighbor-lattice-exposure",
         "targetHandle": "input"
+      },
+      {
+        "id": "edge-plugin-metadata-trajectory-context",
+        "source": "plugin-metadata",
+        "sourceHandle": "output",
+        "target": "trajectory-context",
+        "targetHandle": "input"
       }
     ]
+  },
+  "interface": {
+    "version": 2,
+    "provides": {
+      "volt/structure-identification@1": {
+        "annotated_dump": "annotated.dump",
+        "clusters_table": "clusters.table",
+        "cluster_transitions": "cluster_transitions.table",
+        "neighbor_lattice": "neighbor_lattice.parquet"
+      },
+      "volt/per-atom-properties@1": {
+        "atoms": "atoms.parquet"
+      }
+    }
   }
 }
