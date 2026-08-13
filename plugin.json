@@ -15,7 +15,7 @@
             "icon": "HiCubeTransparent",
             "author": "Rodolfo Herrera",
             "license": "MIT",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "homepage": "https://github.com/rodyherrera/Volterra",
             "description": "Ejecuta ACNA/CNA, exporta structure_type por atomo y genera los artefactos de cluster graph consumibles por OpenDXA."
           }
@@ -139,7 +139,41 @@
         "data": {
           "export": {
             "exporter": "AtomisticExporter",
-            "type": "glb"
+            "type": "glb",
+            "options": {
+              "propertyColors": {
+                "OTHER": [
+                  0.949,
+                  0.949,
+                  0.949,
+                  1
+                ],
+                "FCC": [
+                  0.4,
+                  1,
+                  0.4,
+                  1
+                ],
+                "HCP": [
+                  1,
+                  0.4,
+                  0.4,
+                  1
+                ],
+                "BCC": [
+                  0.4,
+                  0.4,
+                  1,
+                  1
+                ],
+                "ICO": [
+                  1,
+                  0.6471,
+                  0,
+                  1
+                ]
+              }
+            }
           }
         }
       },
