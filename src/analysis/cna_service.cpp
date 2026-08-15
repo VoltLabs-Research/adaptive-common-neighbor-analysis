@@ -68,7 +68,6 @@ json CommonNeighborAnalysisService::compute(
         ClusterBuilder clusterBuilder(analysis, context);
         clusterBuilder.build(_dissolveSmallClusters);
 
-        // Count structures for summary
         std::map<int,int> structCounts;
         for(int i = 0; i < frame.natoms; ++i)
             structCounts[context.structureTypes->getInt(i)]++;
