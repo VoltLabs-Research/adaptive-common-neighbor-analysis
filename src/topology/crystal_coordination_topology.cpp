@@ -8,8 +8,6 @@
 
 namespace Volt{
 
-namespace{
-
 bool orthonormalizeOrientation(const Matrix3& input, Matrix3& output){
     Vector3 c0 = input.column(0);
     Vector3 c1 = input.column(1);
@@ -217,8 +215,6 @@ bool canonicalizeNeighborMapping(
 
     std::copy_n(bestMapping.begin(), coordinationNumber, neighborMapping);
     return true;
-}
-
 }
 
 CoordinationStructure CoordinationStructures::_coordinationStructures[NUM_COORD_TYPES];
