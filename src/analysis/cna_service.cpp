@@ -82,9 +82,7 @@ json CommonNeighborAnalysisService::compute(
 
         if(!outputBase.empty()){
             const std::string parquetPath = outputBase + "_cna_analysis.parquet";
-            if(!JsonUtils::writeJsonToParquet(result, parquetPath, false)){
-                return AnalysisResult::failure("Failed to write " + parquetPath);
-            }
+            JsonUtils::writeJsonToParquet(result, parquetPath, false);
 
             const std::string atomsPath = outputBase + "_atoms.parquet";
             StructureIdentificationExport::streamStructureIdentificationToParquet(
