@@ -18,6 +18,7 @@
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
+#include <cstdio>
 #include <map>
 #include <utility>
 #include <vector>
@@ -43,6 +44,29 @@ std::vector<int> assignableStructureTypes(LatticeStructureType lattice){
         default:
             return {};
     }
+}
+
+void appendStructureCount(std::string& line, const char* name, int count, int totalAtoms){
+    char entry[96];
+    std::snprintf(entry, sizeof(entry), "%s%s %d (%.1f%%)",
+        line.empty() ? "" : ", ", name, count, percentOf(count, totalAtoms));
+    line += entry;
+}
+
+// "FCC 851234 (81.2%), HCP 52428 (5.0%), Other 144914 (13.8%)"; every type the input lattice
+// can produce is listed, so a zero count stays visible.
+std::string describeStructureCounts(std::map<int,int> counts, const std::vector<int>& assignableTypes, int totalAtoms){
+    for(const int structureType : assignableTypes){
+        counts.try_emplace(structureType, 0);
+    }
+    std::string line;
+    for(const auto& [structureType, count] : counts){
+        if(structureType != StructureType::OTHER){
+            appendStructureCount(line, structureTypeName(structureType), count, totalAtoms);
+        }
+    }
+    appendStructureCount(line, "Other", counts[StructureType::OTHER], totalAtoms);
+    return line;
 }
 
 }
@@ -134,6 +158,11 @@ json CommonNeighborAnalysisService::compute(
         std::map<int,int> structCounts;
         for(int i = 0; i < frame.natoms; ++i)
             structCounts[context.structureTypes->getInt(i)]++;
+        spdlog::info("Structure types: {}", describeStructureCounts(structCounts, assignableTypes, frame.natoms));
+        const auto otherAtoms = structCounts.find(StructureType::OTHER);
+        if(frame.natoms > 0 && otherAtoms != structCounts.end() && otherAtoms->second == frame.natoms){
+            spdlog::warn("No atom matched the {} signatures; check that crystal_structure fits the sample", signatures);
+        }
 
         json result;
         result["main_listing"] = {
