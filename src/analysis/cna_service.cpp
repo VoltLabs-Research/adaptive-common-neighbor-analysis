@@ -180,8 +180,11 @@ json CommonNeighborAnalysisService::compute(
             StructureIdentificationExport::streamStructureIdentificationToParquet(
                 atomsPath, frame, analysis
             );
+            spdlog::info("Exported atoms data to: {}", atomsPath);
         }
 
+        spdlog::info("Writing annotated dump, cluster graph and neighbor lattice...");
+        timer.restart();
         if(!AnalysisPipelineUtils::appendClusterOutputs(
             frame,
             outputBase,
@@ -193,6 +196,7 @@ json CommonNeighborAnalysisService::compute(
         )){
             return AnalysisResult::failure(frameError);
         }
+        spdlog::info("Cluster outputs written in {}", timer.elapsed());
 
         result["is_failed"] = false;
         return result;
