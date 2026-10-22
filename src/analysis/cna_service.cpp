@@ -107,10 +107,29 @@ json CommonNeighborAnalysisService::compute(
             context.maximumNeighborDistance
         );
 
+        spdlog::info("Building clusters...");
+        timer.restart();
         CNAClusterInputAdapter clusterInputAdapter;
         clusterInputAdapter.prepare(analysis, context);
         ClusterBuilder clusterBuilder(analysis, context);
         clusterBuilder.build(_dissolveSmallClusters);
+        const auto& clusters = analysis.clusterGraph().clusters();
+        // The cluster graph always holds the null cluster 0.
+        const std::size_t clusterCount = clusters.empty() ? 0 : clusters.size() - 1;
+        if(_dissolveSmallClusters){
+            const auto dissolvedClusters = std::count_if(clusters.begin(), clusters.end(), [](const Cluster* cluster){
+                return cluster && cluster->id != 0 && cluster->structure == LATTICE_OTHER;
+            });
+            spdlog::info(
+                "Built {} clusters in {} ({} with fewer than {} atoms dissolved)",
+                clusterCount,
+                timer.elapsed(),
+                dissolvedClusters,
+                ClusterBuilder::kDefaultSmallClusterSize
+            );
+        }else{
+            spdlog::info("Built {} clusters in {}", clusterCount, timer.elapsed());
+        }
 
         std::map<int,int> structCounts;
         for(int i = 0; i < frame.natoms; ++i)
