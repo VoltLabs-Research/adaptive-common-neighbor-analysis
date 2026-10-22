@@ -1,5 +1,6 @@
 #include <volt/analysis/cna_structure_analysis.h>
 #include <volt/analysis/crystal_symmetry_utils.h>
+#include <volt/core/progress.h>
 #include <volt/topology/crystal_coordination_topology.h>
 #include <volt/topology/crystal_coordination_topology_init.h>
 
@@ -96,11 +97,13 @@ void identifyStructuresCNA(StructureAnalysis& analysis){
     ensureCoordinationStructuresInitialized();
     analysis.setCrystalInfoProvider(cnaCrystalInfoProvider());
 
+    const Stopwatch neighborTimer;
     const int maxNeighborListSize = MAX_NEIGHBORS;
     NearestNeighborFinder neighFinder(maxNeighborListSize);
     if(!neighFinder.prepare(context.positions, context.simCell)){
         throw std::runtime_error("Error in neighFinder.preapre(...)");
     }
+    spdlog::info("  Nearest-neighbor search ready in {}", neighborTimer.elapsed());
 
     CoordinationStructures coordinationStructures(
         context.structureTypes,
@@ -112,10 +115,11 @@ void identifyStructuresCNA(StructureAnalysis& analysis){
     const size_t N = context.atomCount();
     std::vector<int> localCounts(N, 0);
     std::vector<std::array<int, MAX_NEIGHBORS>> orderedNeighborIndices(N);
+    ProgressReporter progress("Classifying atoms", N);
     context.maximumNeighborDistance = tbb::parallel_reduce(
         tbb::blocked_range<size_t>(0, N),
         0.0,
-        [&neighFinder, &coordinationStructures, &localCounts, &orderedNeighborIndices](const tbb::blocked_range<size_t>& range, double maxDistSoFar) -> double {
+        [&neighFinder, &coordinationStructures, &localCounts, &orderedNeighborIndices, &progress](const tbb::blocked_range<size_t>& range, double maxDistSoFar) -> double {
             for(size_t index = range.begin(); index != range.end(); ++index){
                 int count = 0;
                 auto& neighbors = orderedNeighborIndices[index];
@@ -131,6 +135,7 @@ void identifyStructuresCNA(StructureAnalysis& analysis){
                     maxDistSoFar = localMaxDistance;
                 }
             }
+            progress.advance(range.size());
             return maxDistSoFar;
         },
         [](double a, double b) -> double {
