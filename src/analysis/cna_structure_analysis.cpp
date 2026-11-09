@@ -97,6 +97,8 @@ void identifyStructuresCNA(StructureAnalysis& analysis){
     ensureCoordinationStructuresInitialized();
     analysis.setCrystalInfoProvider(cnaCrystalInfoProvider());
 
+    // The neighbor search index, which is built serially, then the per-atom classification.
+    ProgressSteps steps({1.0, 2.0});
     const Stopwatch neighborTimer;
     const int maxNeighborListSize = MAX_NEIGHBORS;
     NearestNeighborFinder neighFinder(maxNeighborListSize);
@@ -104,6 +106,7 @@ void identifyStructuresCNA(StructureAnalysis& analysis){
         throw std::runtime_error("Error in neighFinder.preapre(...)");
     }
     spdlog::info("  Nearest-neighbor search ready in {}", neighborTimer.elapsed());
+    steps.next();
 
     CoordinationStructures coordinationStructures(
         context.structureTypes,

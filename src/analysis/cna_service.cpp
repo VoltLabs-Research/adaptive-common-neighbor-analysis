@@ -116,6 +116,8 @@ json CommonNeighborAnalysisService::compute(
             if(!signatures.empty()) signatures += '/';
             signatures += structureTypeName(structureType);
         }
+        // Classification, clusters, the atoms table, then the dump, cluster graph and neighbor lattice.
+        ProgressSteps steps({1.0, 3.0, 1.0, 4.0});
         spdlog::info(
             "Classifying {} atoms with adaptive CNA ({} signatures, {}-neighbor shell)...",
             context.atomCount(),
@@ -130,6 +132,7 @@ json CommonNeighborAnalysisService::compute(
             timer.elapsed(),
             context.maximumNeighborDistance
         );
+        steps.next("Building clusters");
 
         spdlog::info("Building clusters...");
         timer.restart();
@@ -171,6 +174,7 @@ json CommonNeighborAnalysisService::compute(
         };
         result["sub_listings"] = json::object();
         result["per-atom-properties"] = json::array();
+        steps.next("Writing the atoms table");
 
         if(!outputBase.empty()){
             const std::string parquetPath = outputBase + "_cna_analysis.parquet";
@@ -182,6 +186,7 @@ json CommonNeighborAnalysisService::compute(
             );
             spdlog::info("Exported atoms data to: {}", atomsPath);
         }
+        steps.next("Writing cluster outputs");
 
         spdlog::info("Writing annotated dump, cluster graph and neighbor lattice...");
         timer.restart();
