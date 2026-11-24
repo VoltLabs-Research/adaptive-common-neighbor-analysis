@@ -5,6 +5,7 @@ Runs adaptive common neighbor analysis (ACNA/CNA), exports per-atom structure ty
 ## Install
 
 ```bash
+npm install -g @voltstack/vpm
 vpm install @voltlabs/adaptive-common-neighbor-analysis
 ```
 
