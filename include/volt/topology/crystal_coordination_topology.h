@@ -137,6 +137,26 @@ private:
     static void initializeSymmetryInformation();
     static void findCommonNeighborsForBond(CoordinationStructure& coordStruct, int neighborIndex);
     static void initializeCommonNeighbors();
+
+    static bool latticeSupportsOrientationInversion(
+        const LatticeStructure& lattice,
+        int coordinationNumber,
+        std::array<int, MAX_NEIGHBORS>& outInversePermutation
+    );
+    static bool computeMatchedOrientation(
+        const LatticeStructure& lattice,
+        const Vector3* neighborVectors,
+        const int* neighborMapping,
+        int coordinationNumber,
+        Matrix3& outRawOrientation,
+        Matrix3& outOrientation
+    );
+    static bool canonicalizeNeighborMapping(
+        const LatticeStructure& lattice,
+        const Vector3* neighborVectors,
+        int coordinationNumber,
+        int* neighborMapping
+    );
         
     const SimulationCell& _simCell;
     ParticleProperty* _structureTypes;

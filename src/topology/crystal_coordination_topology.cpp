@@ -8,40 +8,7 @@
 
 namespace Volt{
 
-bool orthonormalizeOrientation(const Matrix3& input, Matrix3& output){
-    Vector3 c0 = input.column(0);
-    Vector3 c1 = input.column(1);
-    Vector3 c2 = input.column(2);
-
-    const double l0 = c0.length();
-    if(l0 <= EPSILON){
-        return false;
-    }
-    c0 /= l0;
-
-    c1 -= c0 * c0.dot(c1);
-    const double l1 = c1.length();
-    if(l1 <= EPSILON){
-        return false;
-    }
-    c1 /= l1;
-
-    c2 -= c0 * c0.dot(c2);
-    c2 -= c1 * c1.dot(c2);
-    const double l2 = c2.length();
-    if(l2 <= EPSILON){
-        return false;
-    }
-    c2 /= l2;
-
-    output = Matrix3(c0, c1, c2);
-    if(output.determinant() < 0.0){
-        output.column(2) = -output.column(2);
-    }
-    return true;
-}
-
-bool latticeSupportsOrientationInversion(
+bool CoordinationStructures::latticeSupportsOrientationInversion(
     const LatticeStructure& lattice,
     int coordinationNumber,
     std::array<int, MAX_NEIGHBORS>& outInversePermutation
@@ -62,7 +29,7 @@ bool latticeSupportsOrientationInversion(
     return true;
 }
 
-bool computeMatchedOrientation(
+bool CoordinationStructures::computeMatchedOrientation(
     const LatticeStructure& lattice,
     const Vector3* neighborVectors,
     const int* neighborMapping,
@@ -101,10 +68,10 @@ bool computeMatchedOrientation(
     }
 
     outRawOrientation = Matrix3(orientationW * orientationVInverse);
-    return orthonormalizeOrientation(outRawOrientation, outOrientation);
+    return outRawOrientation.orthonormalized(outOrientation);
 }
 
-bool canonicalizeNeighborMapping(
+bool CoordinationStructures::canonicalizeNeighborMapping(
     const LatticeStructure& lattice,
     const Vector3* neighborVectors,
     int coordinationNumber,

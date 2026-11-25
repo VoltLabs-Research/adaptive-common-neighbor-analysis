@@ -15,6 +15,7 @@ endif()
 volt_add_plugin(common-neighbor-analysis
     SOURCES
         src/analysis/cna_service.cpp
+        src/analysis/common_neighbor_analysis_log.cpp
         src/analysis/cna_classifier.cpp
         src/analysis/cna_cluster_input_adapter.cpp
         src/analysis/cna_structure_analysis.cpp

@@ -1,4 +1,5 @@
 #include <volt/analysis/cna_structure_analysis.h>
+#include <volt/analysis/common_neighbor_analysis_log.h>
 #include <volt/analysis/crystal_symmetry_utils.h>
 #include <volt/core/progress.h>
 #include <volt/topology/crystal_coordination_topology.h>
@@ -93,19 +94,21 @@ std::shared_ptr<const StructureAnalysisCrystalInfo> cnaCrystalInfoProvider(){
 using namespace CnaStructureAnalysisDetail;
 
 void identifyStructuresCNA(StructureAnalysis& analysis){
+    CommonNeighborAnalysisLog log(analysis.context().inputCrystalType);
     StructureContext& context = analysis.context();
     ensureCoordinationStructuresInitialized();
     analysis.setCrystalInfoProvider(cnaCrystalInfoProvider());
 
-    // The neighbor search index, which is built serially, then the per-atom classification.
-    ProgressSteps steps({1.0, 2.0});
-    const Stopwatch neighborTimer;
+    ProgressSteps steps({
+        {"Indexing the atoms for the neighbor search", 1.0},
+        {"Classifying atoms", 2.0},
+    });
     const int maxNeighborListSize = MAX_NEIGHBORS;
     NearestNeighborFinder neighFinder(maxNeighborListSize);
     if(!neighFinder.prepare(context.positions, context.simCell)){
         throw std::runtime_error("Error in neighFinder.prepare(...)");
     }
-    spdlog::info("  Nearest-neighbor search ready in {}", neighborTimer.elapsed());
+    log.dump(neighFinder);
     steps.next();
 
     CoordinationStructures coordinationStructures(
