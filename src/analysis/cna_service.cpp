@@ -79,7 +79,7 @@ json CommonNeighborAnalysisService::compute(
         json result;
         result["main_listing"] = {
             {"total_atoms", frame.natoms},
-            {"structure_count", static_cast<int>(structCounts.size())}
+            {"structure_count", structCounts.size()}
         };
         result["sub_listings"] = json::object();
         result["per-atom-properties"] = json::array();
